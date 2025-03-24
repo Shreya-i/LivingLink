@@ -1,0 +1,82 @@
+*
+{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+body
+{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   min-height: 110vh;
+   min-width: 110vw;
+   background:url(logo.avif);
+   background-size:cover;
+   background-repeat: no-repeat;
+   background-position: center;
+}
+.box{
+    padding: 20px 30px;
+    width: 300px;
+    height: 400px;
+    backdrop-filter: blur(50px);
+    border-radius: 5px;
+    background: rgba(203, 224, 236, 0.2);
+    border: 1px solid rgba(255, 255, 255, .5)
+}
+.box .form
+{
+    padding: 10px 20px;
+}
+.box .form h2
+{
+    text-align: center;
+    color:white;   
+}
+.box .form form
+{
+    margin-top: 50px;
+    align-items: center;
+    
+}
+.box .form form .inputbox input
+{
+    padding: 10px 20px;
+    border: none;
+    outline: none;
+    background: none;
+    border-bottom: 1px solid white;
+    margin-bottom: 20px;
+    color: white;
+}
+.box .form form .inputbox span
+{
+   position: absolute;
+   transform: translateY(-70px);
+   font-size: 14px;
+   color: white;
+}
+.box .form form .sub
+{
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    outline: none;
+    background: rgb(54, 110, 88);
+    cursor: pointer;
+    font-size: 16px;
+   margin-left: 55px;
+}
+.box .form form .login
+{
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    outline: none;
+    background: rgb(54, 110, 88);
+    cursor: pointer;
+    font-size: 16px;
+   margin-left: 55px;
+}

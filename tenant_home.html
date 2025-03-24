@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tenant_home</title>
+    <link rel="stylesheet" href="tenant_home.css">
+</head>
+<body>
+    <div class="container"> 
+    
+        <div class="heading">
+            <span>Rent your home</span>
+            <input type="text" placeholder="Search by Location..">
+        </div>
+    </div>
+    <div class="info">
+        <table class="table">
+            <thead>
+                <th>Sno</th>
+                <th>Name</th>
+                <th>Property_Type</th>
+                <th>Address</th>
+                <th>Quantity</th>
+                <th>Rent</ntth>
+            </thead>
+            <tbody id="tbody1">
+
+            </tbody>
+        </table>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getDatabase, ref, update, onValue, child, set } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyD2UAXf3VLYfGKM4z4m6B0rdpdREay_2LA",
+          authDomain: "livinglink-dc4e2.firebaseapp.com",
+          projectId: "livinglink-dc4e2",
+          storageBucket: "livinglink-dc4e2.appspot.com",
+          messagingSenderId: "191032692351",
+          appId: "1:191032692351:web:3cd585ec07c3257700394a"
+        };
+      
+        // Initialize Firebase app and get reference to database
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+    
+        let propertyList = [];
+        let sno = 0;
+        const tbody = document.getElementById('tbody1');
+    
+        // Function to get all properties
+        const selectAllDataRealtime = () => {
+            const dbref = ref(db, 'properties'); // Root of properties
+            onValue(dbref, (snapshot) => {
+                propertyList = [];
+                snapshot.forEach((userSnapshot) => {
+                    // Each user has a list of properties
+                    userSnapshot.forEach((propertySnapshot) => {
+                        const propertyData = propertySnapshot.val();
+                        propertyList.push({
+                            name: propertyData.name,
+                            propertyType: propertyData.propertyType,
+                            address: propertyData.address,
+                            quantity: propertyData.quantity,
+                            rent: propertyData.rent,
+                            photoURL: propertyData.photoURL
+                        });
+                    });
+                });
+                addAllRecords();
+            });
+        }
+    
+        // Function to add a single record to the table
+        const addSingleRecord = (name, propertyType, address, quantity, rent) => {
+            let trow = document.createElement('tr');
+            let td1 = document.createElement('td');
+            let td2 = document.createElement('td');
+            let td3 = document.createElement('td');
+            let td4 = document.createElement('td');
+            let td5 = document.createElement('td');
+            let td6 = document.createElement('td');
+            
+            td1.innerHTML = ++sno;
+            td2.innerHTML = name || 'N/A';
+            td3.innerHTML = propertyType || 'N/A';
+            td4.innerHTML = address || 'N/A';
+            td5.innerHTML = quantity || 'N/A';
+            td6.innerHTML = rent || 'N/A';
+            
+            trow.append(td1, td2, td3, td4, td5, td6);
+            tbody.append(trow);
+        }
+    
+        // Function to add all records to the table
+        const addAllRecords = () => {
+            sno = 0;
+            tbody.innerHTML = ""; // Clear table before adding new data
+            propertyList.forEach(property => {
+                addSingleRecord(property.name, property.propertyType, property.address, property.quantity, property.rent);
+            });
+        }
+    
+        window.addEventListener('load', selectAllDataRealtime);
+    </script>
+    
+</body>
+</html>

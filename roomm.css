@@ -1,0 +1,81 @@
+body {
+    font-family:  sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #9ba6c3;
+}
+
+.card-container {
+    display: flex;
+    align-items: center;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.photo img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 10px; /* Square with rounded corners */
+}
+
+.name {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.hobbies, .about-us {
+    text-align: left;
+    margin-top: 15px;
+}
+
+.hobbies h3, .about-us h3 {
+    font-size: 12px;
+    color: #666;
+}
+
+.hobbies ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 10px 0;
+    color: #555;
+}
+
+.about-us p {
+    font-size: 10px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.arrow-left, .arrow-right {
+    font-size: 24px;
+    text-decoration: none;
+    color: #333;
+    padding: 10px;
+    transition: color 0.3s ease;
+}
+
+.arrow-left:hover, .arrow-right:hover {
+    color: #666;
+}
+
+.arrow-left {
+    margin-right: 10px;
+}
+
+.arrow-right {
+    margin-left: 10px;
+}

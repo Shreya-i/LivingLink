@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="owner_home.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="menu">
+                <a href="#profile" class="tabs active">Profile</a>
+                <a href="#add-property" class="tabs">Add Property</a>
+                <a href="#update-property" class="tabs">Update Property</a>
+                <a href="#message" class="tabs">Message</a>  
+                <button id="logout-btn">Logout</button>      
+            </div>
+        </nav>
+    </header>
+
+    <!-- Tab content sections -->
+    <div id="profile" class="tab-content active">
+        <div id="profile-info">
+            <h2>Profile Information</h2>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>Phone:</strong> <span id="profile-phone"></span></p>
+             <p><strong>Name:</strong> <span id="profile-name"></span></p>
+        </div>
+    </div>
+
+    <div id="add-property" class="tab-content">
+        <div class="box">
+            <div class="form">
+                <h2>Add Property Form</h2>
+                <form id="property-form">
+                    <div class="inputbox">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" placeholder="Full Name" required>
+                        </div>
+                    <div class="inputbox">
+                        <label for="property_type">Property Type:</label>
+                        <select name="property" id="property_type">
+                            <option value="Flat"> Flat</option>
+                            <option value="Row House"> Row House</option>
+                        </select>
+                        </div>
+
+                        <div class="inputbox">
+                            <label for="qunatity">Qunatity:</label>
+                            <select name="quantity" id="quantity">
+                                <option value="1RHK"> 1 RHK</option>
+                                <option value="1BHK"> 1 BHK</option>
+                                <option value="2BHK"> 2 BHK</option>
+                                <option value="3BHK"> 3 BHK</option>
+                            </select>
+                        </div>
+                        <div class="inputbox">
+                            <label for="address">Address:</label>
+                            <input type="text" id="address" placeholder="Address" required>
+                        </div>
+                        <div class="inputbox">
+                            <label for="area">Area:</label>
+                            <label for="central line">Central Line</label>
+                            <input type="radio"  id="central line" name="area">
+                            <label for="harbour line">Harbour Line</label>
+                            <input type="radio"  id="harbour line" name="area">
+                            <label for="western line">Western Line</label>
+                            <input type="radio"  id="western line" name="area">
+                        </div>
+                        <div class="inputbox">
+                            <label for=" rent">Total Rent:</label>
+                            <input type="text" id="rent" placeholder="Total amount" required>
+                        </div>
+                        
+                            <label for=" file">Photo:</label>
+                            <input type="file" id="file" accept="image/png, image/jpeg" required>
+                        
+                    <input type="submit" value="Add" class="add" id="add">
+                </form>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="update-property" class="tab-content">
+        <h2>Update Property</h2>
+        <p>This is where you update properties.</p>
+    </div>
+
+    <div id="message" class="tab-content">
+        <h2>Messages</h2>
+        <p>Here are your messages.</p>
+    </div>
+    <script type="module">
+        // Select all the anchor tags with the 'tabs' class and the content sections
+        const tabs = document.querySelectorAll('.tabs');
+        const contents = document.querySelectorAll('.tab-content');
+
+        // Loop through each tab and add a click event listener
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function (e) {
+                e.preventDefault(); 
+                tabs.forEach(tab => tab.classList.remove('active'));
+                contents.forEach(content => content.classList.remove('active'));
+
+    
+                this.classList.add('active');
+                const targetContentId = this.getAttribute('href').substring(1);
+
+                document.getElementById(targetContentId).classList.add('active');
+            });
+        });
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import { getDatabase, ref, set, get,push, child} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword ,signOut, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2UAXf3VLYfGKM4z4m6B0rdpdREay_2LA",
+    authDomain: "livinglink-dc4e2.firebaseapp.com",
+    projectId: "livinglink-dc4e2",
+    storageBucket: "livinglink-dc4e2.appspot.com",
+    messagingSenderId: "191032692351",
+    appId: "1:191032692351:web:3cd585ec07c3257700394a"
+  };
+// Initialize Fi    rebase app and get reference to database
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);  // Use 'db' instead of 'database'
+const auth = getAuth();
+const storage = getStorage(app);
+document.getElementById('property-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    try {
+      // Get form values
+      const name = document.getElementById('name').value;
+      const propertyType = document.getElementById('property_type').value;
+      const quantity = document.getElementById('quantity').value;
+      const address = document.getElementById('address').value;
+      const area = document.querySelector('input[name="area"]:checked').value;
+      const rent = document.getElementById('rent').value;
+      const file = document.getElementById('file').files[0];
+
+      // Get the currently signed-in user
+      const user = auth.currentUser;
+      if (!user) {
+        alert("No user is signed in.");
+        return;
+      }
+
+      const userId = user.uid;
+
+      // Upload the image to Firebase Storage
+      const fileRef = storageRef(storage, `properties/${userId}/${file.name}`);
+      await uploadBytes(fileRef, file);
+      const photoURL = await getDownloadURL(fileRef);
+
+      // Push property data to Firebase Realtime Database
+      const propertyRef = ref(db, `properties/${userId}`);
+      await push(propertyRef, {
+        name,
+        propertyType,
+        quantity,
+        address,
+        area,
+        rent,
+        photoURL
+      });
+      document.getElementById('property-form').reset();
+      alert("Property added successfully!");
+    } catch (error) {
+      console.error("Error adding property: ", error);
+      alert("Error adding property: " + error.message);
+    }
+  });
+  document.getElementById('logout-btn').addEventListener('click', function() {
+    signOut(auth).then(() => {
+      alert("Successfully logged out!");
+      
+      window.location.href = "home.html";  
+    }).catch((error) => {
+      console.error("Error signing out: ", error);
+    });
+  });
+  async function getUserProfile(userId) {
+            const dbRef = ref(db); 
+            const snapshot = await get(child(dbRef, `users/${userId}`)); 
+
+            if (snapshot.exists()) {
+                const profileData = snapshot.val(); 
+                console.log("Profile Data:", profileData); 
+
+                // Display the profile information on screen
+                document.getElementById('profile-email').innerText = profileData.email || "No email available";
+                document.getElementById('profile-phone').innerText = profileData.phone || "No phone available";
+                document.getElementById('profile-name').innerText = profileData.name || "No name available";
+            } else {
+                console.log("No profile data available for this user.");
+                alert("No profile data found.");
+            }
+        }
+
+        // Check the user's authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User is signed in:", user);
+                getUserProfile(user.uid); // Fetch user profile info
+            } else {
+                console.log("No user is signed in.");
+                //alert("No user is signed in. Please log in first.");
+            }
+        });
+    </script>
+</body>
+</html>
