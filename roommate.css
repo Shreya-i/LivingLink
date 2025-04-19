@@ -1,65 +1,283 @@
+/* Body and Layout */
 body {
-    font-family:  sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background: linear-gradient(rgba(147, 153, 213, 0.8),rgba(118, 106, 179, 0.2))
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(to right, #fae9c4, #e3bdbd);
+  display: flex;
+  flex-direction: column; /* To stack header and card */
+  align-items: center;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  margin: 0;
+  box-sizing: border-box;
 }
 
+/* Header */
+.header {
+  width: 99%;
+  background: linear-gradient(to right, #f8d078, #e48f8f);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.header nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.header nav button {
+  background-color: #fff;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.header nav button:hover {
+  background-color: #ffe9a7;
+}
+
+/* Card */
 .card {
-    position: relative;
-    background-color:rgb(221, 221, 218);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    height: 500px;
-    padding: 20px;
-    text-align: center;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  transition: all 0.3s ease;
+  margin-top: 2rem; /* spacing from header */
 }
 
-.photo img {
-    width: 200px;
-    height: 200px;
-    object-fit: fill;
-    margin-bottom: 15px;
-    border-radius: 10px; 
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
-.name {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #333;
+.card img {
+  width: 100%;
+  max-width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 5%;
+  margin-bottom: 1rem;
 }
 
-.hobbies, .about-us {
-    text-align: left;
-    margin-top: 10px;
+.card h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0.5rem 0;
 }
 
-.hobbies h3, .about-us h3 {
-    font-size: 10px;
-    color: #666;
+.card p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1rem;
 }
 
-.hobbies ul {
-    list-style-type: disc;
-    padding-left: 20px;
-    margin: 10px 0;
-    color: #555;
+/* Preferences Badges */
+.preferences {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
 }
 
-.about-us p {
-    font-size: 10px;
-    color: #444;
-    line-height: 1.6;
+.preference-item {
+  font-size: 1rem;
+  color: #666;
 }
 
-.arrow {
-    font-size: 30px;
-    text-decoration: none;
+.badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-left: 0.3rem;
 }
-.arrow a{
-    text-decoration: none;
+
+.badge-yes {
+  background-color: #b4e197;
+  color: #285d1c;
+}
+
+.badge-no {
+  background-color: #f8c1c1;
+  color: #8b1c1c;
+}
+
+/* Buttons */
+.card button {
+  padding: 0.6rem 1.2rem;
+  margin: 0.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#matchBtn {
+  background-color: #9b7d3a;
+  color: white;
+}
+
+#matchBtn:hover {
+  background-color: #563d07;
+}
+
+#ignoreBtn {
+  background-color: #dc4747;
+  color: white;
+}
+
+#ignoreBtn:hover {
+  background-color: #e32925;
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .card {
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+
+  .card h2 {
+    font-size: 1.3rem;
+  }
+
+  .card p {
+    font-size: 0.95rem;
+  }
+
+  .card button {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .preferences {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header h1 {
+    font-size: 1.3rem;
+  }
+
+  .header nav button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+.chat-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.chat-header {
+  background-color: #9b7d3a;
+  color: #fff;
+  padding: 10px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 5px;
+}
+
+.chat-input button {
+  background-color: #9b7d3a;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .card img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+  }
+
+  .card p {
+    font-size: 0.9rem;
+  }
+
+  .card button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.9rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header nav {
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: space-between;
+  }
 }

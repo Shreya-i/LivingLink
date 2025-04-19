@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Property Details</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e8eaf6, #f3e5f5);
+      padding: 20px;
+      color: #333;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      max-width: 800px;
+      margin: auto;
+      overflow: hidden;
+    }
+
+    .card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .info {
+      margin: 10px 0;
+    }
+
+    .message-box {
+      margin-top: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #673ab7;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #5e35b1;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img id="propertyImage" src="" alt="Property Image" />
+    <div class="card-content">
+      <h2 id="propertyName">Property Name</h2>
+      <div class="info"><strong>Type:</strong> <span id="propertyType"></span></div>
+      <div class="info"><strong>Address:</strong> <span id="propertyAddress"></span></div>
+      <div class="info"><strong>Rent:</strong> ₹<span id="propertyRent"></span></div>
+      <div class="info"><strong>Quantity:</strong> <span id="propertyQuantity"></span></div>
+
+      <div class="message-box">
+        <h3>Send Message</h3>
+        <textarea placeholder="Write your message..."></textarea>
+        <button onclick="alert('Message sent! (Not functional yet 😉)')">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2UAXf3VLYfGKM4z4m6B0rdpdREay_2LA",
+      authDomain: "livinglink-dc4e2.firebaseapp.com",
+      projectId: "livinglink-dc4e2",
+      storageBucket: "livinglink-dc4e2.appspot.com",
+      messagingSenderId: "191032692351",
+      appId: "1:191032692351:web:3cd585ec07c3257700394a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const getPropertyIdFromURL = () => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    };
+
+    const loadProperty = (id) => {
+      const propertiesRef = ref(db, 'properties');
+      onValue(propertiesRef, (snapshot) => {
+        snapshot.forEach(userSnap => {
+          userSnap.forEach(propSnap => {
+            if (propSnap.key === id) {
+              const data = propSnap.val();
+              document.getElementById("propertyImage").src = data.photoURL || "https://via.placeholder.com/800x300";
+              document.getElementById("propertyName").innerText = data.name;
+              document.getElementById("propertyType").innerText = data.propertyType;
+              document.getElementById("propertyAddress").innerText = data.address;
+              document.getElementById("propertyRent").innerText = data.rent;
+              document.getElementById("propertyQuantity").innerText = data.quantity;
+            }
+          });
+        });
+      });
+    };
+
+    const id = getPropertyIdFromURL();
+    if (id) {
+      loadProperty(id);
+    } else {
+      alert("Property ID not found in URL!");
+    }
+  </script>
+</body>
+</html>

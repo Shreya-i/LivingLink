@@ -1,33 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>roommate</title>
-    <link rel="stylesheet" href="roomm.css">
-</head>
-<body>
-    <div class="card-container">
-        <a href="#" class="arrow-left">&#8592;</a>
-        <div class="card">
-            <div class="photo">
-                <img src="rohit.jpg" alt="Profile Photo">
-            </div>
-            <h2 class="name">Rohit Bhandwalkar</h2>
-            <div class="hobbies">
-                <h3>Hobbies:</h3>
-                <ul>
-                    
-                    <li>Traveling</li>
-                    <li>Trekking</li>
-                </ul>
-            </div>
-            <div class="about-us">
-                <h3>About Us:</h3>
-                <p>Hi, I'm Rohit! I'm passionate about exploring new places and capturing the beauty of the world through my lens. When I'm not traveling, I enjoy immersing myself in books and learning new things.</p>
-            </div>
-        </div>
-        <a href="#" class="arrow-right">&#8594;</a>
+  <meta charset="UTF-8">
+  <title>Roommate Finder</title>
+  <link rel="stylesheet" href="roommate.css">
+  
+    <div class="header">
+      <h1>RoomieMatch</h1>
+      <nav>
+        <a href="roommate_entrypage.html"><button>Home</button></a>
+        <button onclick="goProfile()">Profile</button>
+        <button onclick="goMessages()">Messages</button>
+      </nav>
     </div>
+    
+
+  <div class="card" id="profileCard">
+    <img id="profilePhoto" src="" alt="User Photo">
+    <h2 id="profileName"></h2>
+
+    <div class="preferences">
+      <div class="preference-item">
+        Happy with pets around:
+        <span id="profilepetfriendly" class="badge"></span>
+      </div>
+      <div class="preference-item">
+        Chill with celebrations
+        <span id="profileparty" class="badge"></span>
+      </div>
+    </div>
+    
+
+    <p id="profileAbout"></p>
+
+    <div class="btn-group">
+      <button id="matchBtn">Match</button>
+      <button id="ignoreBtn">Ignore</button>
+    </div>
+  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD2UAXf3VLYfGKM4z4m6B0rdpdREay_2LA",
+  authDomain: "livinglink-dc4e2.firebaseapp.com",
+  projectId: "livinglink-dc4e2",
+  storageBucket: "livinglink-dc4e2.appspot.com",
+  messagingSenderId: "191032692351",
+  appId: "1:191032692351:web:3cd585ec07c3257700394a",
+  databaseURL: "https://livinglink-dc4e2-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+let currentUserId = null;
+let currentUserLocation = "";
+let currentUserGenderPref = "";
+let profiles = [];
+let currentIndex = 0;
+let currentMatchedId = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUserId = user.uid;
+
+    const userRef = ref(db, `profiles/${currentUserId}`);
+    onValue(userRef, (snapshot) => {
+      const userData = snapshot.val();
+      currentUserLocation = userData.preferred_location;
+      currentUserGenderPref = userData.gender_preference;
+
+      loadProfiles();
+    });
+  } else {
+    alert("User not logged in.");
+  }
+});
+
+function loadProfiles() {
+  const profilesRef = ref(db, "profiles/");
+  onValue(profilesRef, (snapshot) => {
+    const data = snapshot.val();
+    profiles = Object.entries(data)
+      .filter(([uid, profile]) => uid !== currentUserId)
+      .filter(([_, profile]) =>
+        profile.location === currentUserLocation &&
+        profile.gender === currentUserGenderPref
+      )
+      .map(([uid, profile]) => ({ uid, ...profile }));
+
+    currentIndex = 0;
+    showNextProfile();
+  });
+}
+
+function showNextProfile() {
+  const photo = document.getElementById("profilePhoto");
+  const name = document.getElementById("profileName");
+  const about = document.getElementById("profileAbout");
+  const petfriendly = document.getElementById("profilepetfriendly");
+  const partyanimal = document.getElementById("profileparty");
+
+  if (currentIndex >= profiles.length) {
+    photo.src = "";
+    name.innerText = "No more profiles to show.";
+    about.innerText = "";
+    petfriendly.innerText = "";
+    partyanimal.innerText = "";
+    return;
+  }
+
+  const profile = profiles[currentIndex];
+  photo.src = profile.photoURL || "default.jpg";
+  name.innerText = profile.name;
+  about.innerText = profile.about;
+  petfriendly.innerText = profile.pets_tolerance === "TRUE" ? "Yes" : "No";
+  partyanimal.innerText = profile.party_tolerance === "TRUE" ? "Yes" : "No";
+}
+
+document.getElementById("matchBtn").addEventListener("click", () => {
+  const matchedProfile = profiles[currentIndex];
+
+  fetch("http://localhost:3000/recommend", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user1: currentUserId,
+      user2: matchedProfile.uid
+    })
+  })
+    .then(res => res.json())
+    .then(result => {
+      if (result.match) {
+        alert("🎉 It's a match!");
+        saveMatch(currentUserId, matchedProfile.uid);
+        openChatWindow(currentUserId, matchedProfile.uid);
+      } else {
+        alert("Not compatible, moving to next.");
+        currentIndex++;
+        showNextProfile();
+      }
+    })
+    .catch(err => {
+      console.error("Match check failed", err);
+      currentIndex++;
+      showNextProfile();
+    });
+});
+
+document.getElementById("ignoreBtn").addEventListener("click", () => {
+  currentIndex++;
+  showNextProfile();
+  closeMessageWindow(); // Optional: auto-close chat on Ignore
+});
+
+function saveMatch(userId, matchedId) {
+  const matchRef1 = ref(db, `matches/${userId}/${matchedId}`);
+  set(matchRef1, true);
+
+  const matchRef2 = ref(db, `matches/${matchedId}/${userId}`);
+  set(matchRef2, true);
+}
+
+function openChatWindow(userId, matchedId) {
+  currentMatchedId = matchedId;
+  document.getElementById("messageWindow").classList.remove("hidden");
+  document.getElementById("chatUserName").innerText = profiles[currentIndex].name;
+  loadMessages(userId, matchedId);
+}
+
+function closeMessageWindow() {
+  document.getElementById("messageWindow").classList.add("hidden");
+  currentMatchedId = null;
+}
+
+function loadMessages(userId, matchedId) {
+  const chatId = [userId, matchedId].sort().join("_");
+  const chatRef = ref(db, `chats/${chatId}`);
+
+  onValue(chatRef, (snapshot) => {
+    const data = snapshot.val();
+    const chatBox = document.getElementById("chatMessages");
+    chatBox.innerHTML = "";
+
+    if (data) {
+      Object.values(data).forEach(msg => {
+        const msgDiv = document.createElement("div");
+        msgDiv.innerText = `${msg.sender === userId ? "You" : profiles[currentIndex].name}: ${msg.text}`;
+        chatBox.appendChild(msgDiv);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  });
+}
+
+window.sendMessage = function () {
+  const text = document.getElementById("chatInput").value.trim();
+  if (!text || !currentUserId || !currentMatchedId) return;
+
+  const chatId = [currentUserId, currentMatchedId].sort().join("_");
+  const messageRef = ref(db, `chats/${chatId}/${Date.now()}`);
+
+  const messageData = {
+    sender: currentUserId,
+    receiver: currentMatchedId,
+    text: text,
+    timestamp: Date.now()
+  };
+
+  set(messageRef, messageData);
+  document.getElementById("chatInput").value = "";
+};
+
+  </script>
+  <div id="messageWindow" class="chat-popup hidden">
+    <div class="chat-header">
+      <span>Chat with <span id="chatUserName"></span></span>
+      <button onclick="closeMessageWindow()">×</button>
+    </div>
+    <div id="chatMessages" class="chat-messages"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  
+  
 </body>
 </html>

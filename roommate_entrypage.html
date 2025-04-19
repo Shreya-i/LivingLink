@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="roommate_entrypage.css">
+  <title>LivingLink - Browse Roommates</title>
+
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>LivingLink</h1>
+    <nav>
+    <button onclick="logout()" style="color: rgb(62, 44, 15); border:none; background-color: #ffffffcc; font-size: medium; font-weight: bold;">Logout</button>
+      <a href="#profile" style=" font-weight: bold;">Profile</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h2>Let’s Browse Roommates</h2>
+  </section>
+
+  <!-- Cards Section -->
+  <section class="card-section" id="browse">    
+    <!-- Fill Form Card -->
+    <div class="card">
+      <h3>Did You Fill About Yourself?</h3>
+      <p>Please fill your preferences and details before browsing roommates.</p>
+      <button onclick="location.href='roommate_form.html'">Fill Now</button>
+    </div>
+
+    <!-- Browse Roommate Card -->
+    <div class="card">
+      <h3>Browse Compatible Roommates</h3>
+      <p>Find your perfect roommate match based on your preferences.</p>
+      <button onclick="location.href='roommate.html'">Browse Now</button>
+    </div>
+  </section>
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+   
+  import {  onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2UAXf3VLYfGKM4z4m6B0rdpdREay_2LA",
+      authDomain: "livinglink-dc4e2.firebaseapp.com",
+      projectId: "livinglink-dc4e2",
+      storageBucket: "livinglink-dc4e2.appspot.com",
+      messagingSenderId: "191032692351",
+      appId: "1:191032692351:web:3cd585ec07c3257700394a"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+  const storage = getStorage(app);
+
+  
+    // 🔐 Logout function
+    window.logout = function () {
+      signOut(auth)
+        .then(() => {
+          alert("Successfully logged out!");
+          window.location.href = "index.html"; // Redirect to login or landing page
+        })
+        .catch((error) => {
+          console.error("Logout failed:", error.message);
+        });
+    };
+    
+  </script>
+  
+
+
+</body>
+</html>

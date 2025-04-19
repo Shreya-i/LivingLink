@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="box">
+        <div class="form">
+            <h2>Login Form</h2>
+            <form>
+               
+                <div class="inputbox">
+                    <input type="email" id="email" required>
+                    <span>E-mail</span>
+                </div>
+                <div class="inputbox">
+                    <input type="password" id="password" required>
+                    <span>password</span>
+                </div>
+                <input type="submit" value="login" class="login" id="login">
+            </form>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyD2UAXf3VLYfGKM4z4m6B0rdpdREay_2LA",
+          authDomain: "livinglink-dc4e2.firebaseapp.com",
+          projectId: "livinglink-dc4e2",
+          storageBucket: "livinglink-dc4e2.appspot.com",
+          messagingSenderId: "191032692351",
+          appId: "1:191032692351:web:3cd585ec07c3257700394a"
+        };
+      
+        // Initialize Firebase app and get reference to database
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth();
+      
+        // Listen for form submission
+        document.getElementById("login").addEventListener('click', function(e) {
+          e.preventDefault();  // Prevent default form submission
+      
+          // Get user input values
+          const email = document.getElementById("email")?.value;  // Ensure elements exist
+          const password = document.getElementById("password")?.value;
+      
+          if (email && password) {
+            signInWithEmailAndPassword(auth, email, password)
+              .then((userCredential) => {
+                const user = userCredential.user;
+                const date = new Date();
+                
+                // Update the last login time in the database
+                update(ref(db, 'user/' + user.uid), {
+                  last_login: date,
+                });
+      
+                alert('Logged in successfully');
+                window.location.href = "roommate_entrypage.html";
+              })
+              .catch((error) => {
+                const errorMessage = error.message;
+                alert(errorMessage);
+              });
+          } else {
+            alert('Please enter both email and password.');
+          }
+        });
+      
+        
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const uid = user.uid;
+            console.log("User is signed in with UID:", uid);
+          } else {
+            console.log("User is signed out");
+          }
+        });
+        
+      </script>
+      
+</body>
+</html>
