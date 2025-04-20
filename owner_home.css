@@ -149,3 +149,133 @@ select{
     padding-bottom: 8px;
     
 }
+#property-list div {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+}
+
+#property-list img {
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+#property-list button {
+  margin: 5px 5px 0 0;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #fff;
+}
+
+#property-list button:first-of-type {
+  background-color: #007BFF;
+}
+
+#property-list button:last-of-type {
+  background-color: #dc3545;
+}
+
+#edit-form-container {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+#edit-property-form label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+#edit-property-form input,
+#edit-property-form select {
+  width: 100%;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+#edit-property-form button {
+  margin-top: 15px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #28a745;
+  color: white;
+}
+
+#edit-property-form button[type="button"] {
+  background-color: #6c757d;
+  margin-left: 10px;
+}
+/* below code by gpt add by nick . Prompt : add media query */
+/* Default styles for larger screens (already defined in your file, assumed) */
+
+/* Medium screens (tablets) */
+@media (max-width: 768px) {
+  .menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tabs {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  #logout-btn {
+    margin-top: 10px;
+  }
+
+  .box, .form {
+    width: 90%;
+    margin: auto;
+  }
+
+  .inputbox {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+
+  .inputbox label {
+    margin-bottom: 5px;
+  }
+}
+
+/* Small screens (mobile phones) */
+@media (max-width: 480px) {
+  header nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tabs {
+    display: block;
+    padding: 8px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  #logout-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .form h2 {
+    font-size: 18px;
+  }
+
+  .inputbox input,
+  .inputbox select,
+  .inputbox textarea {
+    width: 100%;
+  }
+}
