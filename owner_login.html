@@ -79,6 +79,7 @@
         onAuthStateChanged(auth, (user) => {
           if (user) {
             const uid = user.uid;
+            loadOwnerProperties(user.uid);
            
             console.log("User is signed in with UID:", uid);
           } else {
