@@ -1,1 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="owner_home.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="menu">
+                <a href="#profile" class="tabs active">Profile</a>
+                <a href="#add-property" class="tabs">Add Property</a>
+                <a href="#update-property" class="tabs">Update Property</a>
+                <a href="#message" class="tabs">Message</a>  
+                <button id="logout-btn">Logout</button>      
+            </div>
+        </nav>
+    </header>
 
+    <!-- Tab content sections -->
+    <div id="profile" class="tab-content active">
+        <div id="profile-info">
+            <h2>Profile Information</h2>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>Phone:</strong> <span id="profile-phone"></span></p>
+             <p><strong>Name:</strong> <span id="profile-name"></span></p>
+        </div>
+    </div>
+
+    <div id="add-property" class="tab-content">
+        <div class="box">
+            <div class="form">
+                <h2>Add Property Form</h2>
+                <form id="property-form">
+                    <div class="inputbox">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" placeholder="Full Name" required>
+                        </div>
+                    <div class="inputbox">
+                        <label for="property_type">Property Type:</label>
+                        <select name="property" id="property_type">
+                            <option value="Flat"> Flat</option>
+                            <option value="Row House"> Row House</option>
+                        </select>
+                        </div>
+
+                        <div class="inputbox">
+                            <label for="qunatity">Qunatity:</label>
+                            <select name="quantity" id="quantity">
+                                <option value="1RHK"> 1 RHK</option>
+                                <option value="1BHK"> 1 BHK</option>
+                                <option value="2BHK"> 2 BHK</option>
+                                <option value="3BHK"> 3 BHK</option>
+                            </select>
+                        </div>
+                        <div class="inputbox">
+                            <label for="address">Address:</label>
+                            <input type="text" id="address" placeholder="Address" required>
+                        </div>
+                        <div class="inputbox">
+                            <label for="area">Area:</label>
+                            <label for="central line">Central Line</label>
+                            <input type="radio"  id="central line" name="area">
+                            <label for="harbour line">Harbour Line</label>
+                            <input type="radio"  id="harbour line" name="area">
+                            <label for="western line">Western Line</label>
+                            <input type="radio"  id="western line" name="area">
+                        </div>
+                        <div class="inputbox">
+                            <label for=" rent">Total Rent:</label>
+                            <input type="text" id="rent" placeholder="Total amount" required>
+                        </div>
+                        
+                            <label for=" file">Photo:</label>
+                            <input type="file" id="file" accept="image/png, image/jpeg" >
+                        
+                    <input type="submit" value="Add" class="add" id="add">
+                </form>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- <div id="update-property" class="tab-content">
+        <h2>Update Property</h2>
+        <p>This is where you update properties.</p>
+    </div> -->
+    <div id="update-property" class="tab-content">
+        <h2>Update Property</h2>
+        <div id="property-list"></div>
+      
+        <div id="edit-form-container" style="display: none;">
+          <h3>Edit Property</h3>
+        
+          <form id="edit-property-form">
+            <input type="hidden" id="edit-property-id">
+            <label>Name: <input type="text" id="edit-name" required></label><br>
+            <label>Type: 
+              <select id="edit-type">
+                <option value="Flat">Flat</option>
+                <option value="Row House">Row House</option>
+              </select>
+            </label><br>
+            <label>Quantity: 
+              <select id="edit-quantity">
+                <option value="1RHK">1 RHK</option>
+                <option value="1BHK">1 BHK</option>
+                <option value="2BHK">2 BHK</option>
+                <option value="3BHK">3 BHK</option>
+              </select>
+            </label><br>
+            <label>Address: <input type="text" id="edit-address" required></label><br>
+            <label>Area: 
+              <select id="edit-area">
+                <option value="Central Line">Central Line</option>
+                <option value="Harbour Line">Harbour Line</option>
+                <option value="Western Line">Western Line</option>
+              </select>
+            </label><br>
+            <label>Rent: <input type="text" id="edit-rent" required></label><br>
+            <button type="submit">Update</button>
+            <button type="button" onclick="document.getElementById('edit-form-container').style.display='none'">Cancel</button>
+          </form>
+        </div>
+    </div>
+      
+
+    <div id="message" class="tab-content">
+        <h2>Messages</h2>
+        <p>Here are your messages.</p>
+    </div>
+    <script type="module">
+        // Select all the anchor tags with the 'tabs' class and the content sections
+        const tabs = document.querySelectorAll('.tabs');
+        const contents = document.querySelectorAll('.tab-content');
+
+        // Loop through each tab and add a click event listener
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function (e) {
+                e.preventDefault(); 
+                tabs.forEach(tab => tab.classList.remove('active'));
+                contents.forEach(content => content.classList.remove('active'));
+
+    
+                this.classList.add('active');
+                const targetContentId = this.getAttribute('href').substring(1);
+
+                document.getElementById(targetContentId).classList.add('active');
+            });
+        });
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import { getDatabase, ref, set, get,push, child} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword ,signOut, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2UAXf3VLYfGKM4z4m6B0rdpdREay_2LA",
+    authDomain: "livinglink-dc4e2.firebaseapp.com",
+    projectId: "livinglink-dc4e2",
+    storageBucket: "livinglink-dc4e2.appspot.com",
+    messagingSenderId: "191032692351",
+    appId: "1:191032692351:web:3cd585ec07c3257700394a"
+  };
+// Initialize Fi    rebase app and get reference to database
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);  // Use 'db' instead of 'database'
+const auth = getAuth();
+const storage = getStorage(app);
+document.getElementById('property-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    try {
+      // Get form values
+      const name = document.getElementById('name').value;
+      const propertyType = document.getElementById('property_type').value;
+      const quantity = document.getElementById('quantity').value;
+      const address = document.getElementById('address').value;
+      const area = document.querySelector('input[name="area"]:checked').value;
+      const rent = document.getElementById('rent').value;
+      const file = document.getElementById('file').files[0];
+
+      // Get the currently signed-in user
+      const user = auth.currentUser;
+      if (!user) {
+        alert("No user is signed in.");
+        return;
+      }
+
+      const userId = user.uid;
+
+      // Upload the image to Firebase Storage
+      const fileRef = storageRef(storage, `properties/${userId}/${file.name}`);
+      await uploadBytes(fileRef, file);
+      const photoURL = await getDownloadURL(fileRef);
+
+      // Push property data to Firebase Realtime Database
+      const propertyRef = ref(db, `properties/${userId}`);
+      await push(propertyRef, {
+        name,
+        propertyType,
+        quantity,
+        address,
+        area,
+        rent,
+        photoURL
+      });
+      document.getElementById('property-form').reset();
+      alert("Property added successfully!");
+    } catch (error) {
+      console.error("Error adding property: ", error);
+      alert("Error adding property: " + error.message);
+    }
+  });
+  document.getElementById('logout-btn').addEventListener('click', function() {
+    signOut(auth).then(() => {
+      alert("Successfully logged out!");
+      
+      window.location.href = "home.html";  
+    }).catch((error) => {
+      console.error("Error signing out: ", error);
+    });
+  });
+  async function getUserProfile(userId) {
+            const dbRef = ref(db); 
+            const snapshot = await get(child(dbRef, `users/${userId}`)); 
+
+            if (snapshot.exists()) {
+                const profileData = snapshot.val(); 
+                console.log("Profile Data:", profileData); 
+
+                // Display the profile information on screen
+                document.getElementById('profile-email').innerText = profileData.email || "No email available";
+                document.getElementById('profile-phone').innerText = profileData.phone || "No phone available";
+                document.getElementById('profile-name').innerText = profileData.name || "No name available";
+            } else {
+                console.log("No profile data available for this user.");
+                alert("No profile data found.");
+            }
+        }
+
+        // Check the user's authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User is signed in:", user);
+                getUserProfile(user.uid);
+                loadOwnerProperties(user.uid); // Fetch user profile info
+            } else {
+                console.log("No user is signed in.");
+                //alert("No user is signed in. Please log in first.");
+            }
+        });
+        async function loadOwnerProperties(userId) {
+        const propertyRef = ref(db, `properties/${userId}`);
+        const snapshot = await get(propertyRef);
+        const propertyList = document.getElementById("property-list");
+        propertyList.innerHTML = ""; // Clear previous entries
+
+        
+
+        if (snapshot.exists()) {
+        const properties = snapshot.val();
+        for (const [id, prop] of Object.entries(properties)) {
+        const propDiv = document.createElement("div");
+        propDiv.innerHTML = `
+        <p><strong>${prop.name}</strong> - ${prop.propertyType}, ${prop.quantity}<br>
+        ${prop.address}, ${prop.area} - ₹${prop.rent}</p>
+        <button onclick="editProperty('${id}', ${JSON.stringify(prop).replace(/"/g, '&quot;')})">Edit</button>
+        <hr>
+      ` ;
+        propDiv.innerHTML = `
+        <p><strong>${prop.name}</strong> - ${prop.propertyType}, ${prop.quantity}<br>
+        ${prop.address}, ${prop.area} - ₹${prop.rent}</p>
+        <button onclick="editProperty('${id}', ${JSON.stringify(prop).replace(/"/g, '&quot;')})">Edit</button>
+        <button onclick="deleteProperty('${id}')">Delete</button>
+        <hr>
+        `;
+
+        propertyList.appendChild(propDiv);
+         }
+        } else {
+        propertyList.innerHTML = "<p>No properties listed.</p>";
+          }
+        }
+        window.editProperty = function (propertyId, prop) {
+            console.log("Edit clicked:", propertyId, prop);
+            document.getElementById("edit-property-id").value = propertyId;
+            document.getElementById("edit-name").value = prop.name;
+            document.getElementById("edit-type").value = prop.propertyType;
+            document.getElementById("edit-quantity").value = prop.quantity;
+            document.getElementById("edit-address").value = prop.address;
+            document.getElementById("edit-area").value = prop.area;
+            document.getElementById("edit-rent").value = prop.rent;
+            document.getElementById("update-property").classList.add("active");
+  
+  //      Show the edit form container
+            document.getElementById("edit-form-container").style.display = "block";
+        };
+
+        document.getElementById("edit-property-form").addEventListener("submit", async function(e) {
+            e.preventDefault(); // Prevent page reload
+
+            const propertyId = document.getElementById("edit-property-id").value;
+
+         // Get updated values
+            const updatedData = {
+            name: document.getElementById("edit-name").value,
+            propertyType: document.getElementById("edit-type").value,
+            quantity: document.getElementById("edit-quantity").value,
+            address: document.getElementById("edit-address").value,
+            area: document.getElementById("edit-area").value,
+            rent: document.getElementById("edit-rent").value,
+            };
+        
+
+
+
+
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to update a property.");
+                return;
+            }
+
+            try {
+                const updateRef = ref(db, `properties/${user.uid}/${propertyId}`);
+                await set(updateRef, updatedData); // overwrite with new data
+
+                alert("Property updated successfully!");
+                document.getElementById("edit-form-container").style.display = "none";
+                loadOwnerProperties(user.uid); // refresh the list
+            }catch (err) {
+                console.error("Update error:", err);
+                alert("Failed to update property.");
+            }
+        });
+        window.deleteProperty = async function(propertyId) {
+                const user = auth.currentUser;
+                if (!user) {
+                    alert("You must be logged in to delete a property.");
+                    return;
+                }
+
+                const confirmDelete = confirm("Are you sure you want to delete this property?");
+                if (!confirmDelete) return;
+
+                try {
+                    const deleteRef = ref(db, `properties/${user.uid}/${propertyId}`);
+                    await set(deleteRef, null); // this deletes the node
+
+                    alert("Property deleted successfully!");
+                    loadOwnerProperties(user.uid); // refresh the list
+                } catch (error) {
+                    console.error("Delete error:", error);
+                    alert("Failed to delete property.");
+                }
+        };
+
+
+
+    </script>
+</body>
+</html>
